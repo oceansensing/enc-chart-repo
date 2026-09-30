@@ -1,21 +1,22 @@
 # enc-chart-repo: the founding plan and running record
 
 NOAA's **nautical charts**, for the map. Created on GitHub by the owner and given its documents by the site's
-`pipeline/scaffold/new-origin.py`. **Its files are committed by hand under `map/` and published on dispatch.**
+`pipeline/scaffold/new-origin.py`. **Its files are made by the site's generator, run by this repository's generate workflow, committed only when they change and published by the same run** (dispatch-only until its first run has published; monthly after).
 
 ## What it is for
 
-**The charts' land** (`map/noaa-land/`): the Electronic Navigational Charts' land areas (`LNDARE`), each place from the finest usage band that charts it, with the charts' coverage (`M_COVR`), and inside US waters, where no chart covers a place within 2 km of Natural Earth's land, that place as land. Zoom-8 Mapbox vector tiles (layers `land` and `cover`, extent 65536) under a version named by their own hash, and `noaa-land/index.json` naming the version and every tile. It is the land an ocean field is clipped at along US coasts. Committed by hand and published on dispatch; it moved here from `realtime-data-repo`'s statics on 2026-09-30. A chart layer or basemap is expected to follow.
+**The charts' land** (`map/noaa-land/`): the Electronic Navigational Charts' land areas (`LNDARE`), each place from the finest usage band that charts it, with the charts' coverage (`M_COVR`), and inside US waters, where no chart covers a place within 2 km of Natural Earth's land, that place as land. Zoom-8 Mapbox vector tiles (layers `land` and `cover`, extent 65536) under a version named by their own hash, and `noaa-land/index.json` naming the version and every tile. It is the land an ocean field is clipped at along US coasts. Made by the site's generator and published by this repository's generate workflow; it moved here from `realtime-data-repo`'s statics on 2026-09-30. A chart layer or basemap is expected to follow.
 
 ## Where the data comes from
 
-NOAA Office of Coast Survey, ENC Direct to GIS (`https://encdirect.noaa.gov/arcgis/rest/services/encdirect`): every usage band's land (`Land_Area`) and coverage (`enc_coverage`) layers, a U.S. government work in the public domain. **Read 2026-09-30**: 8 min 43 s to fetch every band into a cache; the coastal band 371 coverage polygons and 38,889 land polygons, the general 103 and 8,912, the overview 26 and 3,423. The merge runs by hand, with Shapely, from a generator kept in a private repository; nothing here runs it.
+NOAA Office of Coast Survey, ENC Direct to GIS (`https://encdirect.noaa.gov/arcgis/rest/services/encdirect`): every usage band's land (`Land_Area`) and coverage (`enc_coverage`) layers, a U.S. government work in the public domain. **Read 2026-09-30**: 8 min 43 s to fetch every band into a cache; the coastal band 371 coverage polygons and 38,889 land polygons, the general 103 and 8,912, the overview 26 and 3,423. The merge runs with Shapely, from a generator kept in a private repository (the site's), which this repository's generate workflow runs: it fetches the charts afresh, writes this land and `river-data-repo`'s rivers together, and **a guard stops a run whose drawn land moves more than 50 km² in one tile or 250 km² in all, or whose coverage moves more than 5,000 km²**, naming the tiles for a person to look at first; a dispatch with `accept` lets a looked-at run through.
 
 ## Open
 
 1. The first dispatched run, read: Pages and R2.
 2. A chart layer or basemap, expected.
 3. When no reader asks `realtime-data-repo` for its `noaa-land/` any more, remove it there.
+4. The first dispatched generate run, read; then its monthly schedule, in the same commit as the docs.
 
 ## Record
 

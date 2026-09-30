@@ -1,0 +1,133 @@
+# Remake this repository's charts' land (map/noaa-land/) and river-data-repo's
+# rivers (map/nhd-water/) from NOAA's nautical charts and USGS's National
+# Hydrography Dataset, with the site's generator (scripts/fetch-noaa-land.py),
+# and publish both — the two sets together or not at all: the rivers' index
+# names the land version they were cut for, and a reader draws no rivers over
+# land of another version.
+#
+# An unchanged month writes the same versions and commits nothing; the last
+# publish is served until one is replaced. A month whose drawn land moves past
+# the generator's guard commits nothing and fails, naming the tiles in the
+# run's summary: look at them, then dispatch this workflow with `accept`.
+#
+# **Dispatch-only until a dispatched run has published**, as every origin's
+# first workflow is: prove it, THEN uncomment the schedule below, in the same
+# commit as the docs.
+#
+# Needs: PIPELINES_SSH_KEY (this repository's read-only deploy key on the
+# site, shared with publish.yml) and RIVERS_DEPLOY_KEY (a deploy key on
+# river-data-repo with write access).
+
+name: Generate
+
+on:
+  workflow_dispatch:
+    inputs:
+      accept:
+        description: 'Commit even past the guard (after looking at its report)'
+        type: boolean
+        default: false
+  # schedule:
+  #   - cron: '23 7 2 * *'  # the 2nd of each month, 07:23 UTC
+
+permissions: {}
+
+concurrency:
+  group: generate
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out the pipelines
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: oceansensing/oceansensing.github.io
+          ref: main
+          path: site
+          ssh-key: ${{ secrets.PIPELINES_SSH_KEY }}
+      - name: Check out the rivers
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: oceansensing/river-data-repo
+          ref: main
+          path: rivers
+          ssh-key: ${{ secrets.RIVERS_DEPLOY_KEY }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install the generator's packages
+        run: pip install -r site/scripts/requirements-charts.txt
+      - name: Self-test the generator
+        run: python3 site/scripts/fetch-noaa-land.py --self-test
+      # USGS's answers only: the National Hydrography Dataset is no longer
+      # updated, and its service is slow. The charts are fetched afresh. A
+      # cache unused for seven days is evicted, so a monthly run usually asks
+      # USGS again; a run dispatched after the guard stops one does not.
+      - name: Restore USGS's answers
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: cache/nhd
+          key: nhd-${{ github.run_id }}
+          restore-keys: nhd-
+      - name: Ask USGS, three at a time
+        run: |
+          python3 site/scripts/fetch-noaa-land.py --count-only --prefetch 3 \
+            --cache cache --nhd-cache cache/nhd
+      - name: Generate
+        id: generate
+        env:
+          ACCEPT: ${{ inputs.accept && '--accept' || '' }}
+        run: |
+          set -o pipefail
+          python3 site/scripts/fetch-noaa-land.py --guard $ACCEPT \
+            --cache cache --nhd-cache cache/nhd \
+            --out map/noaa-land --rivers-out rivers/map/nhd-water \
+            2>&1 | tee generate.log
+      - name: Say what the guard found
+        if: always() && steps.generate.outcome != 'skipped'
+        run: |
+          {
+            echo '### Generate'
+            echo '```'
+            grep -E '^(guard|  [0-9]+/[0-9]+ \(|! |small-scale|  stretch at|map/|rivers/)' generate.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit and publish what changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          land=$(jq -r .version map/noaa-land/index.json)
+          rivers=$(jq -r .version rivers/map/nhd-water/index.json)
+          land_changed=$(git status --porcelain -- map | wc -l)
+          rivers_changed=$(git -C rivers status --porcelain -- map | wc -l)
+          if [ "$land_changed" -eq 0 ] && [ "$rivers_changed" -eq 0 ]; then
+            echo "Nothing changed: land $land, rivers $rivers." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # The rivers first: that push starts their own publish. Were this
+          # repository's push to fail after it, the rivers' index would name
+          # land not yet published, and a reader would draw no rivers for a
+          # while — never rivers over the wrong land.
+          if [ "$rivers_changed" -ne 0 ]; then
+            git -C rivers add -A map
+            git -C rivers commit -q -m "The rivers where no chart reaches, version $rivers (monthly)"
+            git -C rivers push -q
+          fi
+          if [ "$land_changed" -ne 0 ]; then
+            git add -A map
+            git commit -q -m "The charts' land, version $land (monthly) [skip ci]"
+            git push -q
+            # A push made with this run's token starts no workflow; a dispatch does.
+            gh workflow run publish.yml --repo "$GITHUB_REPOSITORY"
+          fi
+          echo "Committed: land $land ($land_changed paths), rivers $rivers ($rivers_changed paths); their publishes started." >> "$GITHUB_STEP_SUMMARY"
