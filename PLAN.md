@@ -1,7 +1,7 @@
 # enc-chart-repo: the founding plan and running record
 
 NOAA's **nautical charts**, for the map. Created on GitHub by the owner and given its documents by the site's
-`pipeline/scaffold/new-origin.py`. **Its files are made by the site's generator, run by this repository's generate workflow, committed only when they change and published by the same run** (dispatch-only until its first run has published; monthly after).
+`pipeline/scaffold/new-origin.py`. **Its files are made by the site's generator, run by this repository's generate workflow, committed only when they change and published by the same run** — monthly, on the 2nd at 07:23 UTC, and on dispatch.
 
 ## What it is for
 
@@ -16,7 +16,6 @@ NOAA Office of Coast Survey, ENC Direct to GIS (`https://encdirect.noaa.gov/arcg
 1. The first dispatched run, read: Pages and R2.
 2. A chart layer or basemap, expected.
 3. When no reader asks `realtime-data-repo` for its `noaa-land/` any more, remove it there.
-4. The first dispatched generate run, read; then its monthly schedule, in the same commit as the docs.
 
 ## Record
 
@@ -33,3 +32,15 @@ committing this land and `river-data-repo`'s rivers together only when they
 changed, with a guard that stops a run whose changes pass a threshold.
 **Open**: whether USGS decides squares only a small-scale chart covers (the
 one above) — its first run was held unpublished.
+
+**2026-09-30, evening.** The generator moved into the site's pipeline and
+the generate workflow joined this repository. Its first dispatched run,
+`36775880609` (47 min: the charts fetched afresh, USGS asked three at a
+time), wrote `noaa-land/` `ea33a419d7` — NOAA's updates since the morning,
+the largest 0.03 km² of drawn land — and `river-data-repo`'s rivers
+`d71c8d904e`; its guard read 81.9 km² of drawn land moved in all and 47.1 in
+the largest tile, within its limits; both publishes green (`36781095136`
+here, `36781091333` there). Its schedule is on since: monthly, the 2nd.
+The rectangle over the Rappahannock's south bank is closed by the rivers
+(below, and `river-data-repo`'s record).
+

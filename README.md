@@ -3,7 +3,7 @@
 NOAA's **nautical charts**, for the map: a data repository of the oceansensing ocean map system, with its own
 Pages site, its own schedule and its own gigabyte, and no code of its own.
 
-**Its files are made by the site's generator, run by this repository's generate workflow, committed only when they change and published by the same run** (dispatch-only until its first run has published; monthly after). `PLAN.md` is the founding plan; `CLAUDE.md` carries what must not be
+**Its files are made by the site's generator, run by this repository's generate workflow, committed only when they change and published by the same run** — monthly, on the 2nd at 07:23 UTC, and on dispatch. `PLAN.md` is the founding plan; `CLAUDE.md` carries what must not be
 got wrong and the shared doc doctrine.
 
 ## What it publishes

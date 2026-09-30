@@ -10,9 +10,8 @@
 # the generator's guard commits nothing and fails, naming the tiles in the
 # run's summary: look at them, then dispatch this workflow with `accept`.
 #
-# **Dispatch-only until a dispatched run has published**, as every origin's
-# first workflow is: prove it, THEN uncomment the schedule below, in the same
-# commit as the docs.
+# **Monthly since 2026-09-30**, when its first dispatched run (36775880609)
+# published both sets; and on dispatch.
 #
 # Needs: PIPELINES_SSH_KEY (this repository's read-only deploy key on the
 # site, shared with publish.yml) and RIVERS_DEPLOY_KEY (a deploy key on
@@ -27,8 +26,8 @@ on:
         description: 'Commit even past the guard (after looking at its report)'
         type: boolean
         default: false
-  # schedule:
-  #   - cron: '23 7 2 * *'  # the 2nd of each month, 07:23 UTC
+  schedule:
+    - cron: '23 7 2 * *'  # the 2nd of each month, 07:23 UTC
 
 permissions: {}
 
