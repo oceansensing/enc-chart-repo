@@ -1,0 +1,15 @@
+{
+ "schema": 2,
+ "contract": 1,
+ "generated": "2026-09-30T21:42:35Z",
+ "mode": "full",
+ "run": {
+  "id": "36781095136",
+  "url": "https://github.com/oceansensing/enc-chart-repo/actions/runs/36781095136"
+ },
+ "schedule": {
+  "crons": [],
+  "longestGapHours": null
+ },
+ "products": {}
+}
