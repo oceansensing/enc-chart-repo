@@ -25,3 +25,10 @@ the site's `MAP_ORIGINS` after it. **Open**: a square only the general band
 covers (`US2EC03M`, about 1:600,000, east of the uncharted square in the
 Rappahannock at 37°44.6′–37°48′ N) keeps that chart's generalized river, a
 rectangle of water over the south bank.
+
+**Decided 2026-09-30, to build next**: the generator moves into the site's
+pipeline, and a `generate.yml` here runs it monthly and on dispatch,
+committing this land and `river-data-repo`'s rivers together only when they
+changed, with a guard that stops a run whose changes pass a threshold.
+**Open**: whether USGS decides squares only a small-scale chart covers (the
+one above) — its first run was held unpublished.
