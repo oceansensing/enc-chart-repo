@@ -16,3 +16,12 @@ NOAA Office of Coast Survey, ENC Direct to GIS (`https://encdirect.noaa.gov/arcg
 1. The first dispatched run, read: Pages and R2.
 2. A chart layer or basemap, expected.
 3. When no reader asks `realtime-data-repo` for its `noaa-land/` any more, remove it there.
+
+## Record
+
+**2026-09-30.** First publish, run `36751209681`: `noaa-land/` version
+`012b39a3e7` (950 zoom-8 tiles, 18.8 MB), build, Pages and R2 green; listed in
+the site's `MAP_ORIGINS` after it. **Open**: a square only the general band
+covers (`US2EC03M`, about 1:600,000, east of the uncharted square in the
+Rappahannock at 37°44.6′–37°48′ N) keeps that chart's generalized river, a
+rectangle of water over the south bank.
