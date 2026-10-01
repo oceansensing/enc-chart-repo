@@ -13,9 +13,8 @@ NOAA Office of Coast Survey, ENC Direct to GIS (`https://encdirect.noaa.gov/arcg
 
 ## Open
 
-1. The first dispatched run, read: Pages and R2.
-2. A chart layer or basemap, expected.
-3. When no reader asks `realtime-data-repo` for its `noaa-land/` any more, remove it there.
+1. A chart layer or basemap, expected.
+2. When no reader asks `realtime-data-repo` for its `noaa-land/` any more, remove it there.
 
 ## Record
 
