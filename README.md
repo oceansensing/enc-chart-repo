@@ -26,9 +26,9 @@ workflow and its generate workflow, and nothing else executable; the generate
 workflow pushes `river-data-repo`'s rivers with a deploy key that can write there. Each run publishes to GitHub Pages and
 to Cloudflare R2 from one build. Related repositories: `river-data-repo`, whose rivers are cut to fit this land, and `realtime-data-repo`, whose `map/noaa-land/` is the set this one replaced, kept while older readers still ask for it.
 
-**Which document gets what, and what "update docs" means across all
-twenty-four repositories, is the doctrine block at the top of `CLAUDE.md`**: the
-same text in all twenty-four, held equal by the site's `check:docs`.
+**Which document gets what, and what "update docs" means across every
+repository of this project, is the doctrine block at the top of `CLAUDE.md`**: the
+same text in each, held equal by the site's `check:docs`.
 
 ## Structure
 
