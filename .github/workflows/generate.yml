@@ -1,21 +1,5 @@
-# Remake this repository's charts' land (map/noaa-land/) and river-data-repo's
-# rivers (map/nhd-water/) from NOAA's nautical charts and USGS's National
-# Hydrography Dataset, with the site's generator (scripts/fetch-noaa-land.py),
-# and publish both — the two sets together or not at all: the rivers' index
-# names the land version they were cut for, and a reader draws no rivers over
-# land of another version.
-#
-# An unchanged month writes the same versions and commits nothing; the last
-# publish is served until one is replaced. A month whose drawn land moves past
-# the generator's guard commits nothing and fails, naming the tiles in the
-# run's summary: look at them, then dispatch this workflow with `accept`.
-#
-# **Monthly since 2026-09-30**, when its first dispatched run (36775880609)
-# published both sets; and on dispatch.
-#
-# Needs: PIPELINES_SSH_KEY (this repository's read-only deploy key on the
-# site, shared with publish.yml) and RIVERS_DEPLOY_KEY (a deploy key on
-# river-data-repo with write access).
+# Maintained with the pipeline in oceansensing/oceansensing.github.io.
+# Secrets: PIPELINES_SSH_KEY, RIVERS_DEPLOY_KEY.
 
 name: Generate
 
@@ -66,10 +50,6 @@ jobs:
         run: pip install -r site/scripts/requirements-charts.txt
       - name: Self-test the generator
         run: python3 site/scripts/fetch-noaa-land.py --self-test
-      # USGS's answers only: the National Hydrography Dataset is no longer
-      # updated, and its service is slow. The charts are fetched afresh. A
-      # cache unused for seven days is evicted, so a monthly run usually asks
-      # USGS again; a run dispatched after the guard stops one does not.
       - name: Restore USGS's answers
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
